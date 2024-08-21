@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find the Rat Game</title>
+    <link rel="stylesheet" href="findtherat.css">
+</head>
+<body>
+    <div class="room">
+        <p>Find the Rat!</p>
+        <div id="rat" class="rat"></div>
+        
+        <button id="1" class="closet">1</button>
+        <button id="2" class="carpet">2</button>
+        <button id="3" class="bookshelf">3</button>
+        <button id="4" class="mirror">4</button>
+        <button id="5" class="bed">5</button>
+        <button id="6" class="mini-closet">6</button>
+    </div>
+
+
+    <div class="resultParas">
+        <p class="guesses"></p>
+        <p class="lastResult"></p>
+        <p class="lowOrHi"></p>
+    </div>
+
+    <script>
+        document.getElementById("rat").style.display = 'none';
+
+        let randomNumber = Math.floor(Math.random() * 6) + 1;
+        console.log(`Winning number: ${randomNumber}`); 
+
+        const guesses = document.querySelector('.guesses');
+        const lastResult = document.querySelector('.lastResult');
+        const lowOrHi = document.querySelector('.lowOrHi');
+
+        let guessCount = 1;
+        let resetButton;
+                        
+        // Calculate the difference 
+        function getDifference(userGuess) {
+            return Math.abs(userGuess - randomNumber);
+        }
+
+        // Listen for clicks on buttons
+        for (let i = 1; i <= 6; i++) {
+            document.getElementById(i.toString()).addEventListener('click', function(event) {
+                const userGuess = Number(event.target.id);
+
+                if (guessCount === 1) {
+                    guesses.textContent = 'Previous guesses: ';
+                }
+                guesses.textContent += userGuess + ' ';
+
+                const difference = getDifference(userGuess);
+
+                if (difference === 0) {
+                    lastResult.textContent = 'You found the rat!';
+                    lastResult.style.backgroundColor = 'green';
+                    lowOrHi.textContent = 'BURNING!!!';
+                    ShowOpacity();
+                    setGameOver();
+                } else if (guessCount === 3) {
+                    lastResult.textContent = '!!!GAME OVER!!!';
+                    lowOrHi.textContent = '';
+                    setGameOver();
+                } else if (difference === 1) {
+                    lastResult.textContent = 'Wrong guess!';
+                    lastResult.style.backgroundColor = 'red';
+                    lowOrHi.textContent = "It's super HOT!";
+                } else if (difference === 2) {
+                    lastResult.textContent = 'Wrong guess!';
+                    lastResult.style.backgroundColor = 'red';
+                    lowOrHi.textContent = "It's getting hot!";
+                } else {
+                    lastResult.textContent = 'Wrong guess!';
+                    lastResult.style.backgroundColor = 'red';
+                    lowOrHi.textContent = "It's kinda cold.";
+                }
+                guessCount++;
+            });
+        }
+
+        function ShowOpacity() {
+            document.getElementById("rat").style.display = "block";
+        }
+        
+        function HideOpacity() {
+            document.getElementById("rat").style.display = "none"
+        }
+
+
+        // Reset game
+        function setGameOver() {
+            resetButton = document.createElement('button');
+            resetButton.textContent = 'Start new game';
+            document.body.append(resetButton);
+            resetButton.classList.add("reset-button")
+            resetButton.addEventListener('click', resetGame);
+        }
+
+        function resetGame() {
+            guessCount = 1;
+
+            const resultParas = document.querySelectorAll('.resultParas p');
+            resultParas.forEach(para => para.textContent = '');
+
+            if (resetButton) {
+                resetButton.parentNode.removeChild(resetButton);
+            }
+
+            // Get new number
+            randomNumber = Math.floor(Math.random() * 6) + 1;
+            console.log(`New winning number: ${randomNumber}`); 
+
+            // Restart guesses
+            guesses.textContent = '';
+
+            //restart rat visibiity
+            HideOpacity();
+        }
+    </script>
+</body>
+</html>
